@@ -2,6 +2,7 @@ library(Rcpp)
 library(devtools)
 library(testthat)
 library(roxygen2)
+setwd("/Users/lmy/Desktop/grf/r-package")
 
 package.name <- "grf"
 package.src <- "grf/src"
@@ -25,4 +26,4 @@ build(package.name)
 # Test installation and run some smoke tests.
 install(package.name)
 library(package.name, character.only = TRUE)
-test_package(package.name)
+#test_package(package.name)

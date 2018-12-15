@@ -23,10 +23,11 @@
 #include "prediction/LocalLinearPredictionStrategy.h"
 #include "ForestOptions.h"
 
-ForestPredictor ForestPredictors::custom_predictor(uint num_threads) {
-  num_threads = ForestOptions::validate_num_threads(num_threads);
-  std::shared_ptr<DefaultPredictionStrategy> prediction_strategy(new CustomPredictionStrategy());
-  return ForestPredictor(num_threads, prediction_strategy);
+ForestPredictor ForestPredictors::custom_predictor(uint num_threads,
+                                                   uint ci_group_size) {
+    num_threads = ForestOptions::validate_num_threads(num_threads);
+    std::shared_ptr<OptimizedPredictionStrategy> prediction_strategy(new CustomPredictionStrategy());
+    return ForestPredictor(num_threads, ci_group_size, prediction_strategy);
 }
 
 ForestPredictor ForestPredictors::instrumental_predictor(uint num_threads,

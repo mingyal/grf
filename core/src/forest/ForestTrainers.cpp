@@ -18,6 +18,7 @@
 #include "forest/ForestTrainers.h"
 #include "prediction/InstrumentalPredictionStrategy.h"
 #include "prediction/RegressionPredictionStrategy.h"
+#include "prediction/CustomPredictionStrategy.h"
 #include "relabeling/CustomRelabelingStrategy.h"
 #include "relabeling/InstrumentalRelabelingStrategy.h"
 #include "relabeling/NoopRelabelingStrategy.h"
@@ -67,11 +68,21 @@ ForestTrainer ForestTrainers::regression_trainer(size_t outcome_index) {
   return ForestTrainer(observables, relabeling_strategy, splitting_rule_factory, prediction_strategy);
 }
 
-ForestTrainer ForestTrainers::custom_trainer(size_t outcome_index) {
-  std::unordered_map<size_t, size_t> observables = {{Observations::OUTCOME, outcome_index}};
-
+ForestTrainer ForestTrainers::custom_trainer(size_t outcome_index,
+                                             size_t delta_index,
+                                             size_t G_index){
+  std::unordered_map<size_t, size_t> observables = {
+      {Observations::OUTCOME, outcome_index},
+      {Observations::TREATMENT, delta_index},
+      {Observations::INSTRUMENT, G_index}
+  };
   std::shared_ptr<RelabelingStrategy> relabeling_strategy(new CustomRelabelingStrategy());
   std::shared_ptr<SplittingRuleFactory> splitting_rule_factory(new RegressionSplittingRuleFactory());
+  std::shared_ptr<OptimizedPredictionStrategy> prediction_strategy(new CustomPredictionStrategy());
+/*
+    std::shared_ptr<RelabelingStrategy> relabeling_strategy(new CustomRelabelingStrategy());
+    std::shared_ptr<SplittingRuleFactory> splitting_rule_factory(new RegressionSplittingRuleFactory());
+*/
 
-  return ForestTrainer(observables, relabeling_strategy, splitting_rule_factory, NULL);
+  return ForestTrainer(observables, relabeling_strategy, splitting_rule_factory, prediction_strategy);
 }

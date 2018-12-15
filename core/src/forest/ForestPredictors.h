@@ -22,7 +22,8 @@
 
 class ForestPredictors {
 public:
-  static ForestPredictor custom_predictor(uint num_threads);
+    static ForestPredictor custom_predictor(uint num_threads,
+                                            uint ci_group_size);
 
   static ForestPredictor instrumental_predictor(uint num_threads,
                                                 uint ci_group_size);

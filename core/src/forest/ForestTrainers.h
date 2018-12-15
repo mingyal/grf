@@ -33,7 +33,9 @@ public:
 
   static ForestTrainer regression_trainer(size_t outcome_index);
 
-  static ForestTrainer custom_trainer(size_t outcome_index);
+  static ForestTrainer custom_trainer(size_t outcome_index,
+                                      size_t delta_index,
+                                      size_t G_index);
 };
 
 

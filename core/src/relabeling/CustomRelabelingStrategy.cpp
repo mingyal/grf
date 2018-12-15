@@ -20,5 +20,29 @@
 std::unordered_map<size_t, double> CustomRelabelingStrategy::relabel(
     const std::vector<size_t>& samples,
     const Observations& observations) {
-  return std::unordered_map<size_t, double>();
+    
+    std::unordered_map<size_t, double> relabeled_observations;
+    double sum_IPCW=0;
+    double muhat=0;
+    double node_size = 0;
+    
+    for (size_t sample : samples) {
+        double outcome = observations.get(Observations::OUTCOME, sample);
+        double delta = observations.get(Observations::TREATMENT, sample);
+        double G = observations.get(Observations::INSTRUMENT, sample);
+        double IPCW = 1.0*delta/(1-G);
+        muhat += outcome*IPCW;
+        sum_IPCW += IPCW;
+        node_size+=1;
+    }
+    muhat = muhat/sum_IPCW;
+    
+    for (size_t sample : samples) {
+        double outcome = observations.get(Observations::OUTCOME, sample);
+        double delta = observations.get(Observations::TREATMENT, sample);
+        double G = observations.get(Observations::INSTRUMENT, sample);
+        double IPCW = 1.0*delta/(1-G);
+        relabeled_observations[sample]  = IPCW*(outcome-muhat)/(sum_IPCW/node_size);
+    }
+    return relabeled_observations;
 }
