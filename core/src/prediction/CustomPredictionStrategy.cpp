@@ -62,7 +62,7 @@ std::vector<double> CustomPredictionStrategy::compute_variance(
         
         for (size_t j = 0; j < ci_group_size; ++j) {
             size_t i = group * ci_group_size + j;
-            double psi_1 = leaf_values.get(i, OUTCOME) - average_outcome;
+            double psi_1 = leaf_values.get(i, OUTCOME)/leaf_values.get(i, TREATMENT) - average_outcome;
             
             psi_squared += psi_1 * psi_1;
             group_psi += psi_1;
