@@ -114,7 +114,7 @@ PredictionValues CustomPredictionStrategy::precompute_prediction_values(
         
         double muhat = 0.0;
         double sum_weights=0.0;
-        double check=0.0;
+        double sample_counter=0.0;
         
         for (auto& sample : leaf_node) {
             double Z= observations.get(Observations::OUTCOME, sample);
@@ -123,6 +123,7 @@ PredictionValues CustomPredictionStrategy::precompute_prediction_values(
             double IPCW = delta/(1-G);
             muhat += IPCW*Z;
             sum_weights+=IPCW;
+            sample_counter+=1;
         }
         averages[INSTRUMENT] = sample_counter;
         if(sum_weights>0){
