@@ -2,7 +2,7 @@
 #' 
 #' Trains a custom forest model.
 #'
-#' @param X The covariates used in the regression.
+#' @param X The covariates used in the regression fuck.
 #' @param Y The outcome.
 #' @param sample.fraction Fraction of the data used to build each tree.
 #'                        Note: If honesty = TRUE, these subsamples will
@@ -43,13 +43,15 @@
 #' }
 #'
 #' @export
-custom_forest <- function(X, Y, sample.fraction = 0.5, mtry = NULL, 
+custom_forest <- function(X, Z, delta,  G, sample.fraction = 0.5, mtry = NULL, 
     num.trees = 2000, num.threads = NULL, min.node.size = NULL, honesty = TRUE,
-    honesty.fraction = NULL, alpha = 0.05, imbalance.penalty = 0.0, seed = NULL,
+    honesty.fraction = NULL, ci.group.size=2, alpha = 0.05, imbalance.penalty = 0.0, seed = NULL,
     clusters = NULL, samples_per_cluster = NULL) {
 
     validate_X(X)
-    if(length(Y) != nrow(X)) { stop("Y has incorrect length.") }
+    if(length(Z) != nrow(X)) { stop("Z has incorrect length.") }
+    if(length(delta) != nrow(X)) { stop("delta has incorrect length.") }
+    if(length(G) != nrow(X)) { stop("delta has incorrect length.") }
     
     mtry <- validate_mtry(mtry, X)
     num.threads <- validate_num_threads(num.threads)
@@ -62,15 +64,22 @@ custom_forest <- function(X, Y, sample.fraction = 0.5, mtry = NULL,
     
     no.split.variables <- numeric(0)
     
-    data <- create_data_matrices(X, Y)
-    outcome.index <- ncol(X) + 1
-    ci.group.size <- 1
+    data <- create_data_matrices(X, Z, delta, G)
     
-    forest <- custom_train(data$default, data$sparse, outcome.index, mtry,num.trees, num.threads,
+    outcome.index <- ncol(X) + 1
+    delta.index <- ncol(X) + 2
+    G.index<-ncol(X)+3
+    
+    forest <- custom_train(data$default, data$sparse, outcome.index, delta.index,G.index,  mtry,num.trees, num.threads,
         min.node.size, sample.fraction, seed, honesty, coerce_honesty_fraction(honesty.fraction),
         ci.group.size, alpha, imbalance.penalty, clusters, samples_per_cluster)
     
+    forest[["ci.group.size"]] <- ci.group.size
     forest[["X.orig"]] <- X
+    forest[["Z.orig"]] <- Z
+    forest[["delta.orig"]] <- delta
+    forest[["G.orig"]] <- G
+    forest[["clusters"]] <- clusters
     class(forest) <- c("custom_forest", "grf")
     forest
 }
@@ -103,21 +112,25 @@ custom_forest <- function(X, Y, sample.fraction = 0.5, mtry = NULL,
 #'
 #' @method predict custom_forest
 #' @export
-predict.custom_forest <- function(object, newdata = NULL, num.threads = NULL, ...) {
+predict.custom_forest <- function(object, newdata = NULL, num.threads = NULL, estimate.variance = TRUE,...) {
     
     if (is.null(num.threads)) {
         num.threads <- 0
     } else if (!is.numeric(num.threads) | num.threads < 0) {
         stop("Error: Invalid value for num.threads")
     }
-        
+    ci.group.size = object$ci.group.size
     forest.short <- object[-which(names(object) == "X.orig")]
     
     if (!is.null(newdata)) {
         data <- create_data_matrices(newdata)
-        custom_predict(forest.short, data$default, data$sparse, num.threads)
+        if (estimate.variance) {
+
+          ret=custom_predict(forest.short, data$default, data$sparse, num.threads, ci.group.size)
+        }
     } else {
         data <- create_data_matrices(object[["X.orig"]])
-        custom_predict_oob(forest.short, data$default, data$sparse, num.threads)
+        custom_predict_oob(forest.short, data$default, data$sparse, num.threads, ci.group.size)
     }
+    return (ret)
 }
