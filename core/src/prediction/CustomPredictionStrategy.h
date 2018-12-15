@@ -52,6 +52,7 @@ public:
 private:
     static const std::size_t OUTCOME;
     static const std::size_t TREATMENT;
+    static const std::size_t INSTRUMENT;
     ObjectiveBayesDebiaser bayes_debiaser;
 };
 

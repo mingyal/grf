@@ -17,16 +17,16 @@ deserialize_tree <- function(forest_object, tree_index) {
     .Call('_grf_deserialize_tree', PACKAGE = 'grf', forest_object, tree_index)
 }
 
-custom_train <- function(input_data, sparse_input_data, outcome_index, mtry, num_trees, num_threads, min_node_size, sample_fraction, seed, honesty, honesty_fraction, ci_group_size, alpha, imbalance_penalty, clusters, samples_per_cluster) {
-    .Call('_grf_custom_train', PACKAGE = 'grf', input_data, sparse_input_data, outcome_index, mtry, num_trees, num_threads, min_node_size, sample_fraction, seed, honesty, honesty_fraction, ci_group_size, alpha, imbalance_penalty, clusters, samples_per_cluster)
+custom_train <- function(input_data, sparse_input_data, outcome_index, delta_index, G_index, mtry, num_trees, num_threads, min_node_size, sample_fraction, seed, honesty, honesty_fraction, ci_group_size, alpha, imbalance_penalty, clusters, samples_per_cluster) {
+    .Call('_grf_custom_train', PACKAGE = 'grf', input_data, sparse_input_data, outcome_index, delta_index, G_index, mtry, num_trees, num_threads, min_node_size, sample_fraction, seed, honesty, honesty_fraction, ci_group_size, alpha, imbalance_penalty, clusters, samples_per_cluster)
 }
 
-custom_predict <- function(forest_object, input_data, sparse_input_data, num_threads) {
-    .Call('_grf_custom_predict', PACKAGE = 'grf', forest_object, input_data, sparse_input_data, num_threads)
+custom_predict <- function(forest_object, input_data, sparse_input_data, num_threads, ci_group_size) {
+    .Call('_grf_custom_predict', PACKAGE = 'grf', forest_object, input_data, sparse_input_data, num_threads, ci_group_size)
 }
 
-custom_predict_oob <- function(forest_object, input_data, sparse_input_data, num_threads) {
-    .Call('_grf_custom_predict_oob', PACKAGE = 'grf', forest_object, input_data, sparse_input_data, num_threads)
+custom_predict_oob <- function(forest_object, input_data, sparse_input_data, num_threads, ci_group_size) {
+    .Call('_grf_custom_predict_oob', PACKAGE = 'grf', forest_object, input_data, sparse_input_data, num_threads, ci_group_size)
 }
 
 instrumental_train <- function(input_data, sparse_input_data, outcome_index, treatment_index, instrument_index, mtry, num_trees, num_threads, min_node_size, sample_fraction, seed, honesty, honesty_fraction, ci_group_size, reduced_form_weight, alpha, imbalance_penalty, stabilize_splits, clusters, samples_per_cluster) {

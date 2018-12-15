@@ -21,7 +21,9 @@
 
 const size_t CustomPredictionStrategy::OUTCOME = 0;             // use to record the numerator of estimator
 const std::size_t CustomPredictionStrategy::TREATMENT = 1;      // use to record the denumerator of estimator
-const std::size_t NUM_TYPES = 2;
+const std::size_t CustomPredictionStrategy::INSTRUMENT = 2;
+
+const std::size_t NUM_TYPES = 3;
 
 
 size_t CustomPredictionStrategy::prediction_length() {
