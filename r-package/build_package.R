@@ -2,7 +2,7 @@ library(Rcpp)
 library(devtools)
 library(testthat)
 library(roxygen2)
-setwd("/Users/lmy/Desktop/grf/r-package")
+setwd("/Users/lmy/Dropbox/Mingyang-HLi/projects/survival_random_forest/code/grf/r-package")
 
 package.name <- "grf"
 package.src <- "grf/src"
