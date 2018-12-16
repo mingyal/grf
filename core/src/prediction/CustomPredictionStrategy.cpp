@@ -235,7 +235,11 @@ std::vector<double> CustomPredictionStrategy::compute_variance(
     std::vector<double> myvector;
     myvector.resize(leaf_values.get_num_nodes());
     for (size_t tree_index = 0; tree_index < leaf_values.get_num_nodes(); ++tree_index) {
-        myvector.push_back(leaf_values.get(tree_index, OUTCOME));
+        if (! leaf_values.empty(tree_index)){
+            myvector.push_back(leaf_values.get(tree_index, OUTCOME));
+        }else{
+            myvector.push_back(-1);
+        }
     }
         
     return(myvector);
