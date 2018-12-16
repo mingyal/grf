@@ -38,6 +38,7 @@ std::vector<double> CustomPredictionStrategy::predict(const std::vector<double>&
 
 
 // leaf_values contains leaf_values(the nominator, denominator of each trees), num_trees, strategy->prediction_value_length()
+/*
 std::vector<double> CustomPredictionStrategy::compute_variance(
                                                                    const std::vector<double>& average,
                                                                    const PredictionValues& leaf_values,
@@ -93,7 +94,7 @@ std::vector<double> CustomPredictionStrategy::compute_variance(
     return { var_debiased };
 
 }
-
+*/
 
 size_t CustomPredictionStrategy::prediction_value_length() {
     return NUM_TYPES;
@@ -227,7 +228,7 @@ std::vector<double> CustomPredictionStrategy::compute_debiased_error(
 */
 
 
-std::vector<double> CustomPredictionStrategy::test_variance(
+std::vector<double> CustomPredictionStrategy::compute_variance(
                                                                const std::vector<double>& average,
                                                                const PredictionValues& leaf_values,
                                                                uint ci_group_size) {
