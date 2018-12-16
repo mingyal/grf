@@ -23,7 +23,7 @@ const size_t CustomPredictionStrategy::OUTCOME = 0;             // use to record
 const std::size_t CustomPredictionStrategy::TREATMENT = 1;      // use to record the denumerator of estimator
 const std::size_t CustomPredictionStrategy::INSTRUMENT = 2;
 
-const std::size_t NUM_TYPES = 3;
+const std::size_t NUM_TYPES = 2;
 
 
 size_t CustomPredictionStrategy::prediction_length() {
@@ -36,17 +36,20 @@ std::vector<double> CustomPredictionStrategy::predict(const std::vector<double>&
     return { average.at(OUTCOME) / average.at(TREATMENT) };
 }
 
+
+// leaf_values contains leaf_values(the nominator, denominator of each trees), num_trees, strategy->prediction_value_length()
 std::vector<double> CustomPredictionStrategy::compute_variance(
                                                                    const std::vector<double>& average,
                                                                    const PredictionValues& leaf_values,
                                                                    uint ci_group_size) {
     
-    double average_outcome = average.at(OUTCOME);
+    double average_outcome = average.at(OUTCOME) / average.at(TREATMENT);
     
     double num_good_groups = 0;
     double psi_squared = 0;
     double psi_grouped_squared = 0;
     
+    // leaf_values.get_num_nodes() == num_trees
     for (size_t group = 0; group < leaf_values.get_num_nodes() / ci_group_size; ++group) {
         bool good_group = true;
         for (size_t j = 0; j < ci_group_size; ++j) {
@@ -62,7 +65,7 @@ std::vector<double> CustomPredictionStrategy::compute_variance(
         
         for (size_t j = 0; j < ci_group_size; ++j) {
             size_t i = group * ci_group_size + j;
-            double psi_1 = leaf_values.get(i, TREATMENT) - average_outcome;
+            double psi_1 = leaf_values.get(i, OUTCOME) / leaf_values.get(i, TREATMENT) - average_outcome;
             
             psi_squared += psi_1 * psi_1;
             group_psi += psi_1;
@@ -84,6 +87,9 @@ std::vector<double> CustomPredictionStrategy::compute_variance(
     // Bayes analysis of variance instead to avoid negative values.
     double var_debiased = bayes_debiaser.debias(var_between, group_noise, num_good_groups);
     
+    
+    //leaf_values.get_values(0)
+    //std::vector<double> vect(7, -1);
     return { var_debiased };
 
 }
@@ -125,7 +131,7 @@ PredictionValues CustomPredictionStrategy::precompute_prediction_values(
             sum_weights+=IPCW;
             sample_counter+=1;
         }
-        averages[INSTRUMENT] = sample_counter;
+        //averages[INSTRUMENT] = sample_counter;
         if(sum_weights>0){
             averages[OUTCOME] = muhat/sample_counter;
             averages[TREATMENT] = sum_weights/sample_counter;
@@ -219,3 +225,17 @@ std::vector<double> CustomPredictionStrategy::compute_debiased_error(
         return PredictionValues(values, num_leaves, 1);
     }
 */
+
+
+std::vector<double> CustomPredictionStrategy::test_variance(
+                                                               const std::vector<double>& average,
+                                                               const PredictionValues& leaf_values,
+                                                               uint ci_group_size) {
+    std::vector<double> myvector;
+    myvector.resize(leaf_values.get_num_nodes());
+    for (size_t tree_index = 0; tree_index < leaf_values.get_num_nodes(); ++tree_index) {
+        myvector.push_back(leaf_values.get(tree_index, OUTCOME));
+    }
+        
+    return(myvector);
+}
